@@ -84,31 +84,27 @@ class MillionaireGame:
         # Инициализация основного окна
         self.root = root
         self.root.title("Кто хочет стать миллионером")
-        self.money = 0  # Начальная сумма выигрыша
-        self.question_index = 0  # Индекс текущего вопроса
-        self.current_question = None  # Текущий вопрос
-        self.current_answers = []  # Варианты ответов на текущий вопрос
-        self.hint_used = False  # Флаг, указывающий на использование подсказки
-        self.used_questions = set()  # Множество для хранения использованных вопросов
+        self.money = 0
+        self.question_index = 0
+        self.current_question = None
+        self.current_answers = []
+        self.hint_used = False
+        self.used_questions = set()
+        self.game_over = False  # Флаг окончания игры
 
-        # Создание метки для вопроса
         self.question_label = tk.Label(root, text="", wraplength=400)
         self.question_label.pack(pady=20)
 
-        # Создание кнопок для ответов
         self.answer_buttons = []
         for i in range(4):
             button = tk.Button(root, text="", command=lambda i=i: self.check_answer(i))
             button.pack(pady=5)
             self.answer_buttons.append(button)
 
-        # Создание кнопки для подсказки 50/50
         self.hint_button = tk.Button(root, text="Подсказка 50/50", command=self.use_hint)
         self.hint_button.pack(pady=20)
 
-        # Начать игру с первого вопроса
         self.next_question()
-
     def next_question(self):
         # Проверка на окончание игры
         if self.question_index >= len(prize_money):
@@ -138,19 +134,18 @@ class MillionaireGame:
             self.answer_buttons[i].config(text=answer, state="normal")
 
     def check_answer(self, index):
-        selected_answer = self.current_answers[index]  # Выбранный ответ
-        correct_answer = correct_answers[self.current_question]  # Правильный ответ
+        selected_answer = self.current_answers[index]
+        correct_answer = correct_answers[self.current_question]
 
         if selected_answer == correct_answer:
-            # Правильный ответ: обновление суммы выигрыша и индекса вопроса
             self.money = prize_money[self.question_index]
             self.question_index += 1
             messagebox.showinfo("Правильный ответ!", f"Вы выиграли {self.money} рублей!")
             self.next_question()
         else:
-            # Неправильный ответ: игра заканчивается
             messagebox.showerror("Неправильный ответ", f"Вы выиграли {self.money} рублей.")
-            self.root.destroy()
+            self.game_over = True  # Устанавливаем флаг окончания игры
+            self.root.quit()  # Закрываем окно без исключения
 
     def use_hint(self):
         if self.hint_used:
